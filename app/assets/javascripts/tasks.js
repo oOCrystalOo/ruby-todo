@@ -5,7 +5,13 @@ $(function() {
         $.post(`/tasks/${item_id}`, {
             _method: "PUT",
             task: {
-            done: _done
+                done: _done
+            }
+        }).success(function(data){
+            if (_done) {
+                $(`li[data-item_id="${data.id}"]`).addClass('completed');
+            } else {
+                $(`li[data-item_id="${data.id}"]`).removeClass('completed');
             }
         });
     }
@@ -18,7 +24,12 @@ $(function() {
         }).prop('checked', done).on('change', toggle_task);
         var label = $('<label></label>').html(task.title);
         var div = $('<div></div>').addClass('view').append(input, label);
-        var li = $('<li></li>').append(div);
+        var li = $('<li></li>').attr('data-item_id', task.id).append(div).on('click', function(){
+            $('input', this).trigger('click');
+        });
+        if (done) {
+            li.addClass('completed');
+        }
         $('ul.todo-list').append(li);
     }
 
@@ -30,15 +41,15 @@ $(function() {
 
     $('form').on('submit', function(e){
         e.preventDefault();
-        var input_val = $('input', this).val();
+        var input = $('input', this);
         var payload = {
             task: {
-                title: input_val
+                title: input.val()
             }
         }
         $.post("/tasks", payload).success(function(data){
             create_list_item(data);
-            $('input', this).val('');
+            input.val('');
         });
     });
 });
