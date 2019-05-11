@@ -4,6 +4,26 @@
   </header>
 
   <section class="main">
+    <ul class="todo-list">
 
+    </ul>
   </section>
 </section>
+
+<script>
+  $(function() {
+    $.get("/tasks").success( function( data ) {
+      $.each(data, function(index, task){
+        var done = task.done;
+        var input = $('<input />').attr({
+          type: 'checkbox',
+          class: 'toggle'
+        }).prop('checked', done);
+        var label = $('<label></label>').html(task.title);
+        var div = $('<div></div>').addClass('view').append(input, label);
+        var li = $('<li></li>').append(div);
+        $('ul.todo-list').append(li);
+      });
+    });
+  });
+</script>
